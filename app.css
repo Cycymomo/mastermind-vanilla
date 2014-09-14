@@ -16,10 +16,32 @@ div#game span {
   margin: 1px;
 }
 
-#couleurs_a_trouver, #palette {
+#couleursATrouver, #palette {
   display: none;
 }
 
-#couleurs_a_choisir > span, #palette > span {
+#validChoice {
+  visibility: hidden;
+}
+
+#couleursAChoisir > span, #palette > span {
  cursor: pointer;
+}
+
+#couleursAChoisir > span:active {
+  border-color: #f00;
+}
+
+.rowResultBlanc, .rowResultRouge {
+  width: 30px !important;
+  border: 1 !important;
+  height: 30px !important;
+}
+
+.rowResultBlanc {
+  background-color: #fff !important;
+}
+
+.rowResultRouge {
+  background-color: #f00 !important;
 }

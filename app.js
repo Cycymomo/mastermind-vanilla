@@ -7,60 +7,183 @@
   "use strict";
 
   if (!global.document) {
-    throw 'The game must be launched in the browser (DOM API required)'; 
+    throw 'The game must be launched in the browser (DOM API required)';
   }
-  
-  var fn_buildGame, fn_pickRandomColor, fn_toogleSolution, fn_tooglePalette,
-      a_couleurs_a_trouver, a_grid_couleurs_tentees, a_couleurs_a_choisir,
-      str_couleurAChoisir,
-      div_couleurs_a_trouver, div_couleurs_tentees, div_couleurs_a_choisir, div_palette,
-      NB_TENTATIVES, NB_CHOIX, COULEURS_POSSIBLES;
-  
+
+  var fn_buildGame, fn_pickRandomColor, fn_toogleSolution, fn_openPalette, fn_closePalette, fn_selectColor, fn_validColor, fn_resetColor, fn_displayResult, fn_displayFin,
+      a_couleursATrouver, a_gridCouleursTentees, a_couleursAChoisir,
+      i_couleurAChoisir,
+      div_couleursATrouver, div_couleursTentees, div_couleursAChoisir, div_palette,
+      NB_TENTATIVES, NB_COLOR, COULEURS_POSSIBLES;
+
   NB_TENTATIVES = 10;
-  NB_CHOIX = 4;
+  NB_COLOR = 4;
   COULEURS_POSSIBLES = ['#f00', '#0f0', '#00f', '#ff0', '#fff', '#bbb', '#f80', '#f0f'];
-  
-  a_couleurs_a_trouver = [];
-  a_grid_couleurs_tentees = [];
-  a_couleurs_a_choisir = [];
-  
-  div_couleurs_a_trouver = document.getElementById('couleurs_a_trouver');
-  div_couleurs_tentees = document.getElementById('couleurs_tentees');
-  div_couleurs_a_choisir = document.getElementById('couleurs_a_choisir');
-  div_palette = document.getElementById('palette');
-  
+
+  a_couleursATrouver = [];
+  a_gridCouleursTentees = [];
+  a_couleursAChoisir = [];
+
+  div_couleursATrouver = global.document.getElementById('couleursATrouver');
+  div_couleursTentees = global.document.getElementById('couleursTentees');
+  div_couleursAChoisir = global.document.getElementById('couleursAChoisir');
+  div_palette = global.document.getElementById('palette');
+
   /*
-  * COULEUR ALEATOIRE
+  * RANDOM COLOR
   */
-  fn_pickRandomColor = function() {
-    var colorPicked = COULEURS_POSSIBLES[Math.floor(Math.random() * COULEURS_POSSIBLES.length)];
+  fn_pickRandomColor = function fn_pickRandomColor() {
+    var i_colorPicked = Math.floor(Math.random() * COULEURS_POSSIBLES.length);
+
+    return a_couleursATrouver.indexOf(i_colorPicked) === -1 ? i_colorPicked : fn_pickRandomColor();
+  };
+
+  /*
+  * TOGGLE SOLUTION DISPLAY
+  */
+  fn_toogleSolution = function fn_toogleSolution() {
+    div_couleursATrouver.style.display = !div_couleursATrouver.style.display || div_couleursATrouver.style.display === 'none' ? 'block' : 'none';
+  };
+
+  /*
+  * OPEN PALETTE
+  */
+  fn_openPalette = function fn_openPalette(event) {
+    var i_case, span_couleursAChoisir_x;
+  
+    if (!(event.target instanceof HTMLSpanElement)) {
+      throw "[fn_openPalette] Cette fonction ne peut pas être appelée ici";
+    }
     
-    return a_couleurs_a_trouver.indexOf(colorPicked) === -1 ? colorPicked : fn_pickRandomColor();
+    i_case = +event.target.id.split('_')[1];
+    span_couleursAChoisir_x = global.document.getElementById('couleursAChoisir_' + i_case);
+    
+    if (!span_couleursAChoisir_x) {
+      throw "Impossible de sélectionner cette case";
+    }
+
+    div_palette.style.display = 'block';
+    i_couleurAChoisir = i_case;
   };
-  
+
   /*
-  * TOGGLE SOLUTION
+  * CLOSE PALETTE
   */
-  fn_toogleSolution = function() {
-    div_couleurs_a_trouver.style.display = !div_couleurs_a_trouver.style.display || div_couleurs_a_trouver.style.display === 'none' ? 'block' : 'none';
+  fn_closePalette = function fn_closePalette(event) {
+    div_palette.style.display = 'none';
+    i_couleurAChoisir = null;
   };
-  
+
   /*
-  * TOGGLE PALETTE COULEUR
+  * SELECT COLOR
   */
-  fn_tooglePalette = function(event) {
-    div_palette.style.display = !div_palette.style.display || div_palette.style.display === 'none' ? 'block' : 'none';
-    str_couleurAChoisir = event.target.id.split('_')[3];
-  };
+  fn_selectColor = function fn_selectColor() {
+    var span_couleursAChoisir_x = global.document.getElementById('couleursAChoisir_' + i_couleurAChoisir),
+        i_color;
   
+    if (!(this instanceof HTMLSpanElement)) {
+      throw "[fn_selectColor] Cette fonction ne peut pas être appelée ici";
+    }
+    if (!span_couleursAChoisir_x) {
+      throw "Choisir d'abord une case";
+    }
+
+    i_color = +this.id.split('_')[1];
+
+    if (!COULEURS_POSSIBLES[i_color]) {
+      throw "Cette couleur n'existe pas";
+    }
+  
+    if (a_couleursAChoisir.indexOf(i_color) !== -1 && a_couleursAChoisir[i_couleurAChoisir] !== i_color) {
+      console.dir(a_couleursAChoisir);
+      throw "Impossible de sélectionner deux couleurs identiques";
+    }
+
+    a_couleursAChoisir[i_couleurAChoisir] = i_color;
+    span_couleursAChoisir_x.style.backgroundColor = COULEURS_POSSIBLES[i_color];
+    fn_closePalette();
+  
+    if (a_couleursAChoisir.join('').length === NB_COLOR) {
+       global.document.getElementById('validChoice').style.visibility = 'visible';
+    }
+  };
+
+  /*
+  * RESET COLOR
+  */
+  fn_resetColor = function fn_resetColor() {
+    a_couleursAChoisir = [];
+    for(var i = 0; i < NB_COLOR; i++) {
+      global.document.getElementById('couleursAChoisir_' + i).style.backgroundColor = '#fff';
+    }
+  };
+
+  /*
+  * VALID COLOR
+  */
+  
+  fn_validColor = function fn_validColor() {
+    var temp_tentatives = a_gridCouleursTentees.filter(function(element, index, array) {
+      return element.length > 0;
+    }).length;
+
+    global.document.getElementById('validChoice').style.visibility = 'hidden';
+    for(var i = 0, len = a_couleursAChoisir.length; i < len; i++) {
+      global.document.getElementById(temp_tentatives + '.' + i).style.backgroundColor = COULEURS_POSSIBLES[a_couleursAChoisir[i]];
+    }
+    
+    a_gridCouleursTentees[temp_tentatives] = a_couleursAChoisir.slice();
+    fn_displayResult(temp_tentatives);
+    fn_resetColor();
+  };
+
+  /*
+  * DISPLAY RESULT
+  */
+  fn_displayResult = function fn_displayResult(temp_tentatives) {
+    var temp_choix = a_couleursAChoisir.join(''),
+        temp_solution = a_couleursATrouver.join(''),
+        span_nbBlanc = global.document.getElementById(temp_tentatives + '.nbBlanc'),
+        span_nbRouge = global.document.getElementById(temp_tentatives + '.nbRouge'),
+        i_nbBlanc = 0, i_nbRouge = 0;
+    
+    if (!span_nbBlanc || !span_nbRouge) {
+      throw "Impossible d'afficher le résultat";
+    }
+    
+    if (temp_choix === temp_solution) {
+      fn_displayFin(true, temp_tentatives);
+    } else if (temp_tentatives++ === NB_TENTATIVES) {
+      fn_displayFin();
+    } else {
+      a_couleursAChoisir.forEach(function(element, index, array) {
+        if (element === a_couleursATrouver[index]) {
+          i_nbRouge++;
+        } else if (a_couleursATrouver.indexOf(element) !== -1) {
+          i_nbBlanc++;
+        }
+      });
+      span_nbBlanc.innerHTML = i_nbBlanc;
+      span_nbRouge.innerHTML = i_nbRouge;
+    }
+  };
+
+  /*
+  * DISPLAY FIN
+  */
+  fn_displayFin = function fn_displayFin(win, temp_tentatives) {
+    console.log(win ? 'Gagné en ' + temp_tentatives + ' coups !' : 'Perdu');
+  };
+
   /*
   * CONSTRUCTION DU JEU
   */  
-  fn_buildGame = function() {    
+  fn_buildGame = function fn_buildGame() {
     var temp_tentatives = NB_TENTATIVES,
         temp_choix = 0,
+        i_randomColor,
         div_rows, span_columns;
-    
+
     /*
     * Build : palette de couleurs
     */
@@ -69,32 +192,27 @@
       span_columns = global.document.createElement('span');
       span_columns.id = 'palette_' + temp_choix;
       span_columns.style.backgroundColor = COULEURS_POSSIBLES[temp_choix++];
-      
+      span_columns.onclick = fn_selectColor;
+
       div_palette.appendChild(span_columns);
-      
-      span_columns.onclick = function() {
-        var iColor = this.id.split('_')[1];
-        document.getElementById('couleurs_a_choisir_' + str_couleurAChoisir).style.backgroundColor = COULEURS_POSSIBLES[iColor];
-        fn_tooglePalette();
-      };
     }
-    
+
     /*
     * Build : couleurs à trouver
     */
     temp_choix = 0;
-    
-    while(temp_choix < NB_CHOIX) {
-      var randomColor = fn_pickRandomColor();
-      a_couleurs_a_trouver.push(randomColor);
-      
-      span_columns = global.document.createElement('span');
-      span_columns.id = 'couleurs_a_trouver_' + temp_choix++;
-      span_columns.style.backgroundColor = randomColor;
 
-      div_couleurs_a_trouver.appendChild(span_columns);
+    while(temp_choix < NB_COLOR) {
+      i_randomColor = fn_pickRandomColor();
+      a_couleursATrouver.push(i_randomColor);
+
+      span_columns = global.document.createElement('span');
+      span_columns.id = 'couleursATrouver_' + temp_choix++;
+      span_columns.style.backgroundColor = COULEURS_POSSIBLES[i_randomColor];
+
+      div_couleursATrouver.appendChild(span_columns);
     }
-    
+
     /*
     * Build : grille des tentatives
     */    
@@ -104,37 +222,48 @@
     while(temp_tentatives--) {
       div_rows = global.document.createElement('div');
       div_rows.id = temp_tentatives;
-      a_grid_couleurs_tentees[temp_tentatives] = [];
-  
-      while(temp_choix < NB_CHOIX) {
+      a_gridCouleursTentees[temp_tentatives] = [];
+
+      while(temp_choix < NB_COLOR) {
         span_columns = global.document.createElement('span');
         span_columns.id = temp_tentatives + '.' + temp_choix++;
-        
+
         div_rows.appendChild(span_columns);
       }
-      
+      // Pour afficher le résultat
+      span_columns = global.document.createElement('span');
+      span_columns.id = temp_tentatives + '.nbBlanc';
+      span_columns.className = 'rowResultBlanc';
+      div_rows.appendChild(span_columns);
+      span_columns = global.document.createElement('span');
+      span_columns.id = temp_tentatives + '.nbRouge';
+      span_columns.className = 'rowResultRouge';
+      div_rows.appendChild(span_columns);
+
       temp_choix = 0;
-      div_couleurs_tentees.appendChild(div_rows);
+      div_couleursTentees.appendChild(div_rows);
     }
-    
+
     /*
     * Build : couleurs à choisir
     */
     temp_choix = 0;
-    
-    while(temp_choix < NB_CHOIX) {
-      span_columns = global.document.createElement('span');
-      span_columns.id = 'couleurs_a_choisir_' + temp_choix++;
 
-      div_couleurs_a_choisir.appendChild(span_columns);
-      
-      span_columns.onclick = fn_tooglePalette;
+    while(temp_choix < NB_COLOR) {
+      span_columns = global.document.createElement('span');
+      span_columns.id = 'couleursAChoisir_' + temp_choix++;
+
+      div_couleursAChoisir.appendChild(span_columns);
+
+      span_columns.onclick = fn_openPalette;
     }
   };
-  
-  // Lancement du jeu + bind des événements
+
+  // Lancement du jeu
   fn_buildGame();
   
-  document.getElementById('btn_toggleSolution').onclick = fn_toogleSolution;
-  
+  // bind events globaux
+  global.document.getElementById('toggleSolution').onclick = fn_toogleSolution;
+  global.document.getElementById('validChoice').onclick = fn_validColor;
+
 }(this));
