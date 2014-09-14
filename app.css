@@ -1,0 +1,25 @@
+/*
+* Mastermind - septembre 2014
+* Cyril Moreau - @cycymomo - MIT Licence
+*/
+div#game > div {
+  padding: 5px;
+  margin: 5px;
+}
+
+div#game span {
+  height: 50px;
+  width: 65px;
+  border: 1px #000 solid;
+  display: inline-block;
+  padding: 1px;
+  margin: 1px;
+}
+
+#couleurs_a_trouver, #palette {
+  display: none;
+}
+
+#couleurs_a_choisir > span, #palette > span {
+ cursor: pointer;
+}
