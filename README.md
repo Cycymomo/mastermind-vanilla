@@ -13,3 +13,6 @@ Mastermind JavaScript Vanilla
 - améliorer le gameplay
 - ajouter des options de jeu
 - le code avec Angular, Backbone, React et o_O()
+
+
+The MIT License (MIT)
