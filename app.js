@@ -95,7 +95,6 @@
     }
   
     if (a_couleursAChoisir.indexOf(i_color) !== -1 && a_couleursAChoisir[i_couleurAChoisir] !== i_color) {
-      console.dir(a_couleursAChoisir);
       throw "Impossible de sélectionner deux couleurs identiques";
     }
 
@@ -172,7 +171,8 @@
   * DISPLAY FIN
   */
   fn_displayFin = function fn_displayFin(win, temp_tentatives) {
-    console.log(win ? 'Gagné en ' + temp_tentatives + ' coups !' : 'Perdu');
+    global.alert(win ? 'Gagné en ' + temp_tentatives + ' coups !' : 'Perdu');
+    global.location.reload();
   };
 
   /*
