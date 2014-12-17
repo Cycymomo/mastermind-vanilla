@@ -10,9 +10,9 @@
     throw 'The game must be launched in the browser (DOM API required)';
   }
 
-  var fn_buildGame, fn_pickRandomColor, fn_toogleSolution, fn_openPalette, fn_closePalette, fn_selectColor, fn_validColor, fn_resetColor, fn_displayResult, fn_displayFin,
-      a_couleursATrouver, a_gridCouleursTentees, a_couleursAChoisir,
-      i_couleurAChoisir,
+  var fn_buildGame, fn_buildGridTentatives, fn_buildLine,
+      fn_pickRandomColor, fn_toogleSolution, fn_openPalette, fn_closePalette, fn_selectColor, fn_validColor, fn_resetColor, fn_displayResult, fn_displayFin,
+      a_couleursATrouver, a_gridCouleursTentees, a_couleursAChoisir, i_couleurAChoisir, str_gridCouleursTentees,
       div_couleursATrouver, div_couleursTentees, div_couleursAChoisir, div_palette,
       NB_TENTATIVES, NB_COLOR, COULEURS_POSSIBLES;
 
@@ -21,7 +21,7 @@
   COULEURS_POSSIBLES = ['#f00', '#0f0', '#00f', '#ff0', '#fff', '#bbb', '#f80', '#f0f'];
 
   a_couleursATrouver = [];
-  a_gridCouleursTentees = [];
+  a_gridCouleursTentees = global.localStorage.str_gridCouleursTentees ? JSON.parse(global.localStorage.str_gridCouleursTentees) : [];
   a_couleursAChoisir = [];
 
   div_couleursATrouver = global.document.getElementById('couleursATrouver');
@@ -120,19 +120,32 @@
   /*
   * VALID COLOR
   */
-  
   fn_validColor = function fn_validColor() {
-    var temp_tentatives = a_gridCouleursTentees.filter(function(element, index, array) {
-      return element.length > 0;
-    }).length;
-
-    global.document.getElementById('validChoice').style.visibility = 'hidden';
-    for(var i = 0, len = a_couleursAChoisir.length; i < len; i++) {
-      global.document.getElementById(temp_tentatives + '.' + i).style.backgroundColor = COULEURS_POSSIBLES[a_couleursAChoisir[i]];
-    }
+    var temp_tentatives = a_gridCouleursTentees.length, i, len, span_columns;
     
-    a_gridCouleursTentees[temp_tentatives] = a_couleursAChoisir.slice();
+    // copie du tableau par valeur
+    // @TODO: localstorage ?
+    a_gridCouleursTentees.push(a_couleursAChoisir.slice());
+    
+    // mise à jour de la vue
+    global.document.getElementById('validChoice').style.visibility = 'hidden';
+    for (i = 0, len = a_couleursAChoisir.length; i < len; i++) {
+      fn_buildLine(div_couleursTentees, temp_tentatives + '.' + i, COULEURS_POSSIBLES[a_couleursAChoisir[i]]);
+    }
+    // Pour afficher le résultat : @TODO à changer
+    span_columns = global.document.createElement('span');
+    span_columns.id = temp_tentatives + '.nbBlanc';
+    span_columns.className = 'rowResultBlanc';
+    div_couleursTentees.appendChild(span_columns);
+    span_columns = global.document.createElement('span');
+    span_columns.id = temp_tentatives + '.nbRouge';
+    span_columns.className = 'rowResultRouge';
+    div_couleursTentees.appendChild(span_columns);
+
+    // mise à jour du résultat + check si victoire/défaite
     fn_displayResult(temp_tentatives);
+    
+    // effacement du tableau des couleursà choisir
     fn_resetColor();
   };
 
@@ -151,8 +164,8 @@
     }
     
     if (temp_choix === temp_solution) {
-      fn_displayFin(true, temp_tentatives);
-    } else if (temp_tentatives++ === NB_TENTATIVES) {
+      fn_displayFin(true, temp_tentatives+1);
+    } else if (temp_tentatives+1 === NB_TENTATIVES) {
       fn_displayFin();
     } else {
       a_couleursAChoisir.forEach(function(element, index, array) {
@@ -176,87 +189,74 @@
   };
 
   /*
+  * UTIL : Ajouter une ligne
+  */
+  fn_buildLine = function fn_buildLine(div, id, color, cb) {
+    var span_columns;
+
+    span_columns = global.document.createElement('span');
+    span_columns.id = id;
+    span_columns.style.backgroundColor = color;
+    if (cb) {
+      span_columns.onclick = cb
+    }
+    div.appendChild(span_columns);
+  };
+
+  /*
   * CONSTRUCTION DU JEU
-  */  
-  fn_buildGame = function fn_buildGame() {
-    var temp_tentatives = NB_TENTATIVES,
-        temp_choix = 0,
-        i_randomColor,
-        div_rows, span_columns;
+  */ 
 
-    /*
-    * Build : palette de couleurs
-    */
-    temp_choix = 0;
-    while(temp_choix < COULEURS_POSSIBLES.length) {
-      span_columns = global.document.createElement('span');
-      span_columns.id = 'palette_' + temp_choix;
-      span_columns.style.backgroundColor = COULEURS_POSSIBLES[temp_choix++];
-      span_columns.onclick = fn_selectColor;
-
-      div_palette.appendChild(span_columns);
-    }
-
-    /*
-    * Build : couleurs à trouver
-    */
-    temp_choix = 0;
-
-    while(temp_choix < NB_COLOR) {
-      i_randomColor = fn_pickRandomColor();
-      a_couleursATrouver.push(i_randomColor);
-
-      span_columns = global.document.createElement('span');
-      span_columns.id = 'couleursATrouver_' + temp_choix++;
-      span_columns.style.backgroundColor = COULEURS_POSSIBLES[i_randomColor];
-
-      div_couleursATrouver.appendChild(span_columns);
-    }
-
-    /*
-    * Build : grille des tentatives
-    */    
-    temp_tentatives = NB_TENTATIVES;
-    temp_choix = 0;
-
-    while(temp_tentatives--) {
+  /*
+  * Build : grille des tentatives
+  */
+  fn_buildGridTentatives = function fn_buildGridTentatives() {
+    var span_columns, div_rows, i, j, len;
+    
+    for (i = 0, len = a_gridCouleursTentees.length; i < len; i++) {
       div_rows = global.document.createElement('div');
-      div_rows.id = temp_tentatives;
-      a_gridCouleursTentees[temp_tentatives] = [];
+      div_rows.id = i;
 
-      while(temp_choix < NB_COLOR) {
-        span_columns = global.document.createElement('span');
-        span_columns.id = temp_tentatives + '.' + temp_choix++;
-
-        div_rows.appendChild(span_columns);
+      for (j = 0; j < NB_COLOR; j++) {
+        fn_buildLine(div_rows, i + '.' + j, a_gridCouleursTentees[i][j]);
       }
+
       // Pour afficher le résultat
       span_columns = global.document.createElement('span');
-      span_columns.id = temp_tentatives + '.nbBlanc';
+      span_columns.id = i + '.nbBlanc';
       span_columns.className = 'rowResultBlanc';
       div_rows.appendChild(span_columns);
       span_columns = global.document.createElement('span');
-      span_columns.id = temp_tentatives + '.nbRouge';
+      span_columns.id = i + '.nbRouge';
       span_columns.className = 'rowResultRouge';
       div_rows.appendChild(span_columns);
 
-      temp_choix = 0;
       div_couleursTentees.appendChild(div_rows);
     }
+  };
 
-    /*
-    * Build : couleurs à choisir
-    */
-    temp_choix = 0;
+  /*
+  * Build du jeu : palette de couleurs + les couleurs à trouver / choisir
+  */
+  fn_buildGame = function fn_buildGame() {
+    var i, span_columns, i_randomColor;
 
-    while(temp_choix < NB_COLOR) {
-      span_columns = global.document.createElement('span');
-      span_columns.id = 'couleursAChoisir_' + temp_choix++;
-
-      div_couleursAChoisir.appendChild(span_columns);
-
-      span_columns.onclick = fn_openPalette;
+    // palette de couleurs
+    for (i = 0; i < COULEURS_POSSIBLES.length; i++) {
+      fn_buildLine(div_palette, 'palette_' + i, COULEURS_POSSIBLES[i], fn_selectColor);
     }
+    
+    for (i = 0; i < NB_COLOR; i++) {
+      // couleurs à trouver
+      i_randomColor = fn_pickRandomColor();
+      a_couleursATrouver.push(i_randomColor);
+      fn_buildLine(div_couleursATrouver, 'couleursATrouver_' + i, COULEURS_POSSIBLES[i_randomColor]);
+      
+      // couleurs à choisir
+      fn_buildLine(div_couleursAChoisir, 'couleursAChoisir_' + i, '#fff', fn_openPalette);
+    }
+
+    fn_buildGridTentatives();
   };
 
   // Lancement du jeu
@@ -265,5 +265,4 @@
   // bind events globaux
   global.document.getElementById('toggleSolution').onclick = fn_toogleSolution;
   global.document.getElementById('validChoice').onclick = fn_validColor;
-
 }(this));

@@ -8,8 +8,8 @@ div#game > div {
 }
 
 div#game span {
-  height: 50px;
-  width: 65px;
+  height: 40px;
+  width: 40px;
   border: 1px #000 solid;
   display: inline-block;
   padding: 1px;
@@ -33,9 +33,9 @@ div#game span {
 }
 
 .rowResultBlanc, .rowResultRouge {
-  width: 30px !important;
+  width: 20px !important;
   border: 1 !important;
-  height: 30px !important;
+  height: 20px !important;
 }
 
 .rowResultBlanc {
