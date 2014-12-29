@@ -12,7 +12,16 @@ Made with :
 - Gulp
 
 The game is in dist/
+
 The code is in src/
+
+# Code
+Just clone the repo wherever you want.
+
+`gulp` for development and go localhost:8000
+
+`gulp build` to generate the game in dist/
+
 
 # Ressources
 [Règles du jeu](http://fr.wikipedia.org/wiki/Mastermind) | [Game rules](http://en.wikipedia.org/wiki/Mastermind)
