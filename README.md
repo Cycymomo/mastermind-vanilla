@@ -7,16 +7,18 @@ A Mastermind-like game in Vanilla JavaScript. Made with :
 
 - Pure JavaScript,
 - A bit of CSS,
-- Gulp
+- gulp
 
 The game is in dist/ and the code is in src/
 
 # Code
 Just clone the repo wherever you want.
 
-`gulp` for development and go `localhost:8000`
-
-`gulp build` to generate the game in dist/
+- Install Node and gulp
+- `npm install` to install dev dependancies
+- Code !
+  - `gulp` for development and go `localhost:8000`
+  - `gulp build` to generate the game in dist/
 
 
 # Ressources
