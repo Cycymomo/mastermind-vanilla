@@ -38,7 +38,7 @@ gulp.task('js:min', function () {
             gulp.src(paths.src + '/js/*.js')
                 .pipe(g.uglify())
         )
-        .pipe(g.concat('app.min.js'))
+        .pipe(g.concat('app.' + conf.version + '.min.js'))
         .pipe(g.header(banner))
         .pipe(gulp.dest(paths.dist + '/js'));
 });
@@ -56,7 +56,7 @@ gulp.task('css:min', function () {
                       }))
                 .pipe(g.minifyCss())
         )
-        .pipe(g.concat('app.min.css'))
+        .pipe(g.concat('app.' + conf.version + '.min.css'))
         .pipe(g.header(banner))
         .pipe(gulp.dest(paths.dist + '/css'));
 });
@@ -67,11 +67,12 @@ gulp.task('html', function () {
   return gulp.src(paths.src + '/index.html')
             .pipe(g.inject(
               gulp.src(
-                prod ? [paths['js-prod'], paths['css-prod']] : [paths.src + '/**/*.js', paths.src + '/**/*.css'],
+                prod ? [paths.dist + '/**/*.js', paths.dist + '/**/*.css'] : [paths.src + '/**/*.js', paths.src + '/**/*.css'],
                 {read: false}
               ),
               {relative: true}
             ))
+            .pipe(g.htmlMinifier({collapseWhitespace: true}))
             .pipe(gulp.dest(prod ? paths.dist : paths.src));
 });
 
