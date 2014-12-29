@@ -1,0 +1,45 @@
+{
+  "name": "mastermind-vanilla",
+  "version": "0.0.1",
+  "description": "Mastermind-like game in Vanilla JS",
+  "author": "Cyril Moreau",
+  "license": {
+    "type": "MIT",
+    "url": "https://github.com/Nickdouille/mastermind-vanilla/blob/gh-pages/LICENSE"
+  },
+  "main": "src/js/app.js",
+  "devDependencies": {
+    "gulp": "~3.8.10",
+    "gulp-rimraf": "~0.1.1",
+    "gulp-load-plugins": "~0.8.0",
+    "gulp-inject": "~1.1.1",
+    "run-sequence": "~1.0.2"
+  },
+  "scripts": {
+    "start": "gulp",
+    "build": "gulp build",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/Nickdouille/mastermind-vanilla.git"
+  },
+  "conf": {
+    "paths": {
+      "dist": "dist",
+      "src": "src",
+      "js-prod": "dist/js/app.min.js",
+      "css-prod": "src/css/app.min.css"
+    }
+  },
+  "keywords": [
+    "online",
+    "game",
+    "mastermind",
+    "vanilla",
+    "javascript"
+  ],
+  "bugs": {
+    "url": "https://github.com/Nickdouille/mastermind-vanilla/issues"
+  }
+}
