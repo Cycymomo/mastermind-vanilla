@@ -51,7 +51,7 @@
   fn_openPalette = function fn_openPalette(event) {
     var i_case, span_couleursAChoisir_x;
   
-    if (!(event.target instanceof HTMLSpanElement)) {
+    if (!(event.target instanceof global.HTMLSpanElement)) {
       throw "[fn_openPalette] Cette fonction ne peut pas être appelée ici";
     }
     
@@ -81,7 +81,7 @@
     var span_couleursAChoisir_x = global.document.getElementById('couleursAChoisir_' + i_couleurAChoisir),
         i_color;
   
-    if (!(this instanceof HTMLSpanElement)) {
+    if (!(this instanceof global.HTMLSpanElement)) {
       throw "[fn_selectColor] Cette fonction ne peut pas être appelée ici";
     }
     if (!span_couleursAChoisir_x) {
