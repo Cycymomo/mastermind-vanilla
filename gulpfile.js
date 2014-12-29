@@ -27,8 +27,7 @@ gulp.task('js:hint', function () {
               !paths.src + '/js/vendor/**'
             ])
             .pipe(g.jshint())
-            .pipe(g.jshint.reporter('jshint-stylish'))
-            /*.pipe(g.jshint.reporter('fail'))*/;
+            .pipe(g.jshint.reporter('jshint-stylish'));
 });
 
 gulp.task('js:min', function () {
@@ -72,9 +71,25 @@ gulp.task('html', function () {
               ),
               {relative: true}
             ))
-            .pipe(g.htmlMinifier({collapseWhitespace: true}))
+            .pipe(g.if(prod, g.htmlMinifier({collapseWhitespace: true})))
             .pipe(gulp.dest(prod ? paths.dist : paths.src));
 });
+
+// **********************************
+// DEV
+gulp.task('server', function() {
+  var watcher = gulp.watch(paths.src + 'js/**', ['html', 'js:hint']);
+  watcher.on('change', function(event) {
+    console.log('Fichier ' + event.path + ' changé !');
+  });
+
+  gulp.src(paths.src)
+      .pipe(g.webserver({
+        livereload: true
+      }));
+});
+
+
 
 // **********************************
 // Build : nettoyage + minifications/concat sur les JS/CSS + construction de l'index.html + copie des autres fichiers
