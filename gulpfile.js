@@ -1,8 +1,14 @@
 var gulp        = require('gulp'),
     g           = require('gulp-load-plugins')(),       // Charge les plugins Gulp automatiquement et les attach à "g"
-    paths       = require('./package.json').conf.paths,
+    conf        = require('./package.json'),
+    paths       = conf.paths,
     runSequence = require('run-sequence'),              // Solution temporaire jusqu'à gulp 4 (https://github.com/gulpjs/gulp/issues/355)
-    prod        = false;
+    streamqueue = require('streamqueue'),
+    prod        = false,
+    banner      =   '/*! ' + conf.name + ' v' + conf.version +
+                    ' | ' + conf.author +
+                    ' | ' + conf.license.type + ' License' +
+                    ' | ' + conf.homepage + ' */\n\n';
 
 // **********************************
 // CLEAN : Nettoyage de dist avant chaque rebuil
@@ -13,22 +19,46 @@ gulp.task('clean', function() {
 
 // **********************************
 // JS : hint + min/concat
-gulp.task('js', function (cb) {
-  runSequence(['js:hint', 'js:min'], cb);
-});
-
 gulp.task('js:hint', function () {
-  
+  return gulp.src([
+              'gulpfile.js',
+              paths.src + '/js/**/.js',
+
+              !paths.src + '/js/vendor/**'
+            ])
+            .pipe(g.jshint())
+            .pipe(g.jshint.reporter('jshint-stylish'))
+            /*.pipe(g.jshint.reporter('fail'))*/;
 });
 
 gulp.task('js:min', function () {
-  
+  return streamqueue(
+            { objectMode: true },
+            gulp.src(paths.src + '/js/vendor/**'),
+            gulp.src(paths.src + '/js/*.js')
+                .pipe(g.uglify())
+        )
+        .pipe(g.concat('app.min.js'))
+        .pipe(g.header(banner))
+        .pipe(gulp.dest(paths.dist + '/js'));
 });
 
 // **********************************
 // CSS
-gulp.task('css', function () {
-  
+gulp.task('css:min', function () {
+  return streamqueue(
+            { objectMode: true },
+            gulp.src(paths.src + '/css/vendor/**'),
+            gulp.src(paths.src + '/css/*.css')
+                .pipe(g.autoprefixer({
+                          browsers: ['last 2 versions'],
+                          cascade: false
+                      }))
+                .pipe(g.minifyCss())
+        )
+        .pipe(g.concat('app.min.css'))
+        .pipe(g.header(banner))
+        .pipe(gulp.dest(paths.dist + '/css'));
 });
 
 // **********************************
@@ -47,14 +77,14 @@ gulp.task('html', function () {
 
 // **********************************
 // Build : nettoyage + minifications/concat sur les JS/CSS + construction de l'index.html + copie des autres fichiers
-gulp.task('build', function (cb) {
+gulp.task('build', function () {
   prod = true;
-  runSequence(['clean', 'js', 'css', 'html'], cb);
+  runSequence('clean', 'js:hint', 'js:min', 'css:min', 'html');
 });
 
 // Dev : serveur livereload + lint + watch
 gulp.task('dev', function () {
-  runSequence(['html', 'js:hint', 'server']);
+  runSequence('html', 'js:hint', 'server');
 });
 
 // Par défaut : lancement de l'env de dév
