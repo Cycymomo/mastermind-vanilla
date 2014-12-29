@@ -12,7 +12,7 @@
 
   var fn_buildGame, fn_buildGridTentatives, fn_buildLine,
       fn_pickRandomColor, fn_toogleSolution, fn_openPalette, fn_closePalette, fn_selectColor, fn_validColor, fn_resetColor, fn_displayResult, fn_displayFin,
-      a_couleursATrouver, a_gridCouleursTentees, a_couleursAChoisir, i_couleurAChoisir, str_gridCouleursTentees,
+      a_couleursATrouver, a_gridCouleursTentees, a_couleursAChoisir, i_couleurAChoisir,
       div_couleursATrouver, div_couleursTentees, div_couleursAChoisir, div_palette,
       NB_TENTATIVES, NB_COLOR, COULEURS_POSSIBLES;
 
@@ -69,7 +69,7 @@
   /*
   * CLOSE PALETTE
   */
-  fn_closePalette = function fn_closePalette(event) {
+  fn_closePalette = function fn_closePalette() {
     div_palette.style.display = 'none';
     i_couleurAChoisir = null;
   };
@@ -168,7 +168,7 @@
     } else if (temp_tentatives+1 === NB_TENTATIVES) {
       fn_displayFin();
     } else {
-      a_couleursAChoisir.forEach(function(element, index, array) {
+      a_couleursAChoisir.forEach(function(element, index) {
         if (element === a_couleursATrouver[index]) {
           i_nbRouge++;
         } else if (a_couleursATrouver.indexOf(element) !== -1) {
@@ -198,7 +198,7 @@
     span_columns.id = id;
     span_columns.style.backgroundColor = color;
     if (cb) {
-      span_columns.onclick = cb
+      span_columns.onclick = cb;
     }
     div.appendChild(span_columns);
   };
@@ -239,7 +239,7 @@
   * Build du jeu : palette de couleurs + les couleurs à trouver / choisir
   */
   fn_buildGame = function fn_buildGame() {
-    var i, span_columns, i_randomColor;
+    var i, i_randomColor;
 
     // palette de couleurs
     for (i = 0; i < COULEURS_POSSIBLES.length; i++) {
