@@ -85,11 +85,12 @@ gulp.task('server', function() {
 
   gulp.src(paths.src)
       .pipe(g.webserver({
-        livereload: true
+        host: "localhost",
+        port: 4000,
+        livereload: true,
+        open:true
       }));
 });
-
-
 
 // **********************************
 // Build : nettoyage + minifications/concat sur les JS/CSS + construction de l'index.html + copie des autres fichiers
