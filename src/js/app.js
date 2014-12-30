@@ -21,7 +21,7 @@
   COULEURS_POSSIBLES = ['#f00', '#0f0', '#00f', '#ff0', '#fff', '#bbb', '#f80', '#f0f'];
 
   a_couleursATrouver = [];
-  a_gridCouleursTentees = global.localStorage.str_gridCouleursTentees ? JSON.parse(global.localStorage.str_gridCouleursTentees) : [];
+  a_gridCouleursTentees = global.localStorage && global.localStorage.str_gridCouleursTentees ? JSON.parse(global.localStorage.str_gridCouleursTentees) : [];
   a_couleursAChoisir = [];
 
   div_couleursATrouver = global.document.getElementById('couleursATrouver');
@@ -182,6 +182,7 @@
 
   /*
   * DISPLAY FIN
+  * @TODO
   */
   fn_displayFin = function fn_displayFin(win, temp_tentatives) {
     global.alert(win ? 'Gagné en ' + temp_tentatives + ' coups !' : 'Perdu');
