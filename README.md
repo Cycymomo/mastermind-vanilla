@@ -17,8 +17,8 @@ Just clone the repo wherever you want.
 - Install Node and gulp
 - `npm install` to install dev dependancies
 - Code !
-  - `gulp` for development and go `localhost:8000`
-  - `gulp build` to generate the game in dist/
+  - `gulp` for development (build html + launch server with livereload)
+  - `gulp build` to generate the game in `dist/`
 
 
 # Ressources
