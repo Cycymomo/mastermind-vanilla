@@ -1,10 +1,10 @@
-var gulp        = require('gulp'),
-    g           = require('gulp-load-plugins')(),       // Charge les plugins Gulp automatiquement et les attach à "g"
-    conf        = require('./package.json'),
-    paths       = conf.paths,
+var gulp        = require('gulp'),                      // Burp !
+    g           = require('gulp-load-plugins')(),       // Charge les plugins Gulp automatiquement et les attach à l'objet "g"
+    conf        = require('./package.json'),            // Récupération de la configuration déclarée dans package.json
+    paths       = conf.paths,                           // Récupération des chemins de l'application
     runSequence = require('run-sequence'),              // Solution temporaire jusqu'à gulp 4 (https://github.com/gulpjs/gulp/issues/355)
     streamqueue = require('streamqueue'),
-    prod        = false,
+    prod        = false,                                // Par défaut en dév. Si on lance la tâche "build" : de la prod (voir tâche "build")
     banner      =   '/*! ' + conf.name + ' v' + conf.version +
                     ' | ' + conf.author +
                     ' | ' + conf.license.type + ' License' +
