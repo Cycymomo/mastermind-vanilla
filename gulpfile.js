@@ -6,7 +6,7 @@ var gulp        = require('gulp'),                      // Burp !
     streamqueue = require('streamqueue'),
     prod        = false,                                // Par défaut en dév. Si on lance la tâche "build" : de la prod (voir tâche "build")
     banner      =   '/*! ' + conf.name + ' v' + conf.version +
-                    ' | ' + conf.author +
+                    ' | ' + conf.author + ' -' + conf.contact +
                     ' | ' + conf.license.type + ' License' +
                     ' | ' + conf.homepage + ' */\n\n';
 

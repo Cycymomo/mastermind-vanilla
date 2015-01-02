@@ -3,6 +3,7 @@
   "version": "0.0.1",
   "description": "Mastermind-like game in Vanilla JS",
   "author": "Cyril Moreau",
+  "contact": "@cycymomo",
   "license": {
     "type": "MIT",
     "url": "https://github.com/Nickdouille/mastermind-vanilla/blob/gh-pages/LICENSE"
