@@ -1,10 +1,15 @@
 /*
-* Mastermind VanillaJS - septembre 2014
+* Mastermind VanillaJS
 * Cyril Moreau - @cycymomo - MIT Licence
 */
-div#game > div {
-  padding: 5px;
-  margin: 5px;
+body {
+  display: flex;
+  min-height: 100vh;
+  margin: 0;
+}
+
+div#game {
+  margin: auto;
 }
 
 div#game span {
@@ -25,7 +30,7 @@ div#game span {
 }
 
 #couleursAChoisir > span, #palette > span {
- cursor: pointer;
+  cursor: pointer;
 }
 
 #couleursAChoisir > span:active {

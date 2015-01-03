@@ -49,11 +49,15 @@ gulp.task('css:min', function () {
             { objectMode: true },
             gulp.src(paths.src + '/css/vendor/**'),
             gulp.src(paths.src + '/css/*.css')
-                .pipe(g.autoprefixer({
-                          browsers: ['last 2 versions'],
-                          cascade: false
-                      }))
-                .pipe(g.minifyCss())
+                .pipe(g.cssnext({
+                    compress: true,
+                    features: {
+                      autoprefixer: {
+                        browsers: ['last 2 versions'],
+                        cascade: false
+                      }
+                    }
+                }))
         )
         .pipe(g.concat('app.' + conf.version + '.min.css'))
         .pipe(g.header(banner))

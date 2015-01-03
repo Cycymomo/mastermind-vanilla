@@ -1,8 +1,3 @@
-/*
-* Mastermind VanillaJS - septembre 2014
-* Cyril Moreau - @cycymomo - MIT Licence
-*/
-
 ;(function(global, undefined) {
   "use strict";
 
