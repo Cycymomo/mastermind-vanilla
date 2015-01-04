@@ -65,6 +65,29 @@ gulp.task('css:min', function () {
 });
 
 // **********************************
+// Fonts
+gulp.task('fonts', function () {
+  runSequence('ttf2woff', 'ttf2eot', 'copyttf');
+});
+
+gulp.task('ttf2woff', function(){
+  gulp.src([paths.src + '/fonts/*.ttf'])
+      .pipe(g.ttf2woff())
+      .pipe(gulp.dest(paths.dist + '/fonts'));
+});
+
+gulp.task('ttf2eot', function(){
+  gulp.src([paths.src + '/fonts/*.ttf'])
+      .pipe(g.ttf2eot())
+      .pipe(gulp.dest(paths.dist + '/fonts'));
+});
+
+gulp.task('copyttf', function(){
+  gulp.src([paths.src + '/fonts/*.ttf'])
+      .pipe(gulp.dest(paths.dist + '/fonts'));
+});
+
+// **********************************
 // HTML
 gulp.task('html', function () {
   return gulp.src(paths.src + '/index.html')
@@ -100,7 +123,7 @@ gulp.task('server', function() {
 // Build : nettoyage + minifications/concat sur les JS/CSS + construction de l'index.html + copie des autres fichiers
 gulp.task('build', function () {
   prod = true;
-  runSequence('clean', 'js:hint', 'js:min', 'css:min', 'html');
+  runSequence('clean', 'fonts', 'js:hint', 'js:min', 'css:min', 'html');
 });
 
 // Dev : serveur livereload + lint + watch

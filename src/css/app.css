@@ -2,7 +2,18 @@
 * Mastermind VanillaJS
 * Cyril Moreau - @cycymomo - MIT Licence
 */
+@font-face {
+  font-family: 'PressStart2P';
+  src: url('../fonts/PressStart2P.eot'); /* IE9 Compat Modes */
+  src: url('../fonts/PressStart2P.eot?#iefix') format('embedded-opentype'), /* IE6-IE8 */
+       /*url('PressStart2P.woff2') format('woff2'), Super Modern Browsers */
+       /*url('PressStart2P.svg#svgFontName') format('svg'), /* Legacy iOS */
+       url('../fonts/PressStart2P.woff') format('woff'), /* Pretty Modern Browsers */
+       url('../fonts/PressStart2P.ttf')  format('truetype'); /* Safari, Android, iOS */
+}
+
 body {
+  font-family: "PressStart2P", Helvetica, Arial, sans-serif;
   display: flex;
   min-height: 100vh;
   margin: 0;
