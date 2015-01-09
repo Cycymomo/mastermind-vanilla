@@ -4,6 +4,7 @@ var gulp        = require('gulp'),                      // Burp !
     paths       = conf.paths,                           // Récupération des chemins de l'application
     runSequence = require('run-sequence'),              // Solution temporaire jusqu'à gulp 4 (https://github.com/gulpjs/gulp/issues/355)
     streamqueue = require('streamqueue'),
+    del         = require('del'),
     prod        = false,                                // Par défaut en dév. Si on lance la tâche "build" : de la prod (voir tâche "build")
     banner      =   '/*! ' + conf.name + ' v' + conf.version +
                     ' | ' + conf.author + ' - ' + conf.contact +
@@ -12,9 +13,8 @@ var gulp        = require('gulp'),                      // Burp !
 
 // **********************************
 // CLEAN : Nettoyage de dist avant chaque rebuil
-gulp.task('clean', function() {
-  return gulp.src(paths.dist + '/**', { read: false })
-            .pipe(g.rimraf());
+gulp.task('clean', function(cb) {
+  del([paths.dist], cb);
 });
 
 // **********************************
