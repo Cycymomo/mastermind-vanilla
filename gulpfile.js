@@ -35,10 +35,12 @@ gulp.task('js:min', function () {
             { objectMode: true },
             gulp.src(paths.src + '/js/vendor/**'),
             gulp.src(paths.src + '/js/*.js')
+                .pipe(g.sourcemaps.init())
                 .pipe(g.uglify())
         )
         .pipe(g.concat('app.' + conf.version + '.min.js'))
         .pipe(g.header(banner))
+        .pipe(g.sourcemaps.write('.'))
         .pipe(gulp.dest(paths.dist + '/js'));
 });
 
