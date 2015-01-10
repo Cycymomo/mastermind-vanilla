@@ -14,14 +14,14 @@
 
 body {
   font-family: "PressStart2P", Helvetica, Arial, sans-serif;
-  display: flex;
-  min-height: 100vh;
-  margin: 0;
+  /*display: flex;
+  min-height: 100vh;*/
+  text-align: center;
 }
 
-div#game {
+/*div#game {
   margin: auto;
-}
+}*/
 
 div#game span {
   height: 40px;

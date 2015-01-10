@@ -5,7 +5,7 @@
     throw 'The game must be launched in the browser (DOM API required)';
   }
 
-  var fn_buildGame, fn_buildGridTentatives, fn_buildLine,
+  var fn_buildGame, fn_buildCol, fn_showError, fn_exceptionHandler,
       fn_pickRandomColor, fn_toogleSolution, fn_openPalette, fn_closePalette, fn_selectColor, fn_validColor, fn_resetColor, fn_displayResult, fn_displayFin,
       a_couleursATrouver, a_gridCouleursTentees, a_couleursAChoisir, i_couleurAChoisir,
       div_couleursATrouver, div_couleursTentees, div_couleursAChoisir, div_palette,
@@ -23,6 +23,22 @@
   div_couleursTentees = global.document.getElementById('couleursTentees');
   div_couleursAChoisir = global.document.getElementById('couleursAChoisir');
   div_palette = global.document.getElementById('palette');
+
+  /*
+  * SHOW ERROR
+  */
+  fn_showError = function showError(title, msg, details) {
+   global.alert(title + " / " + msg + ' / ' + details);
+  };
+  fn_exceptionHandler = function fn_exceptionHandler(error, url, lineNumber){
+    var title, msg, details;
+
+    title   = error.name || "[Erreur inconnue]";
+    msg     = error.message || error;
+    details = error.detail || "["+ lineNumber +"] " + url;
+
+    fn_showError(title, msg, details);
+  };
 
   /*
   * RANDOM COLOR
@@ -54,7 +70,7 @@
     span_couleursAChoisir_x = global.document.getElementById('couleursAChoisir_' + i_case);
     
     if (!span_couleursAChoisir_x) {
-      throw "Impossible de sélectionner cette case";
+      throw "[fn_openPalette] Impossible de sélectionner cette case";
     }
 
     div_palette.style.display = 'block';
@@ -80,17 +96,17 @@
       throw "[fn_selectColor] Cette fonction ne peut pas être appelée ici";
     }
     if (!span_couleursAChoisir_x) {
-      throw "Choisir d'abord une case";
+      throw "[fn_selectColor] Choisir d'abord une case";
     }
 
     i_color = +this.id.split('_')[1];
 
     if (!COULEURS_POSSIBLES[i_color]) {
-      throw "Cette couleur n'existe pas";
+      throw "[fn_selectColor] Cette couleur n'existe pas";
     }
   
     if (a_couleursAChoisir.indexOf(i_color) !== -1 && a_couleursAChoisir[i_couleurAChoisir] !== i_color) {
-      throw "Impossible de sélectionner deux couleurs identiques";
+      throw "[fn_selectColor] Impossible de sélectionner deux couleurs identiques";
     }
 
     a_couleursAChoisir[i_couleurAChoisir] = i_color;
@@ -116,30 +132,35 @@
   * VALID COLOR
   */
   fn_validColor = function fn_validColor() {
-    var temp_tentatives = a_gridCouleursTentees.length, i, len, span_columns;
-    
+    var temp_tentatives = a_gridCouleursTentees.length, i, len, span_col, div_line;
+
     // copie du tableau par valeur
     // @TODO: localstorage ?
     a_gridCouleursTentees.push(a_couleursAChoisir.slice());
-    
+
     // mise à jour de la vue
     global.document.getElementById('validChoice').style.visibility = 'hidden';
+
+    div_line = global.document.createElement('div');
+    div_line.id = temp_tentatives;
     for (i = 0, len = a_couleursAChoisir.length; i < len; i++) {
-      fn_buildLine(div_couleursTentees, temp_tentatives + '.' + i, COULEURS_POSSIBLES[a_couleursAChoisir[i]]);
+      fn_buildCol(div_line, temp_tentatives + '.' + i, COULEURS_POSSIBLES[a_couleursAChoisir[i]]);
     }
     // Pour afficher le résultat : @TODO à changer
-    span_columns = global.document.createElement('span');
-    span_columns.id = temp_tentatives + '.nbBlanc';
-    span_columns.className = 'rowResultBlanc';
-    div_couleursTentees.appendChild(span_columns);
-    span_columns = global.document.createElement('span');
-    span_columns.id = temp_tentatives + '.nbRouge';
-    span_columns.className = 'rowResultRouge';
-    div_couleursTentees.appendChild(span_columns);
+    span_col = global.document.createElement('span');
+    span_col.id = temp_tentatives + '.nbBlanc';
+    span_col.className = 'rowResultBlanc';
+    div_line.appendChild(span_col);
+    span_col = global.document.createElement('span');
+    span_col.id = temp_tentatives + '.nbRouge';
+    span_col.className = 'rowResultRouge';
+    div_line.appendChild(span_col);
+
+    div_couleursTentees.appendChild(div_line);
 
     // mise à jour du résultat + check si victoire/défaite
     fn_displayResult(temp_tentatives);
-    
+
     // effacement du tableau des couleursà choisir
     fn_resetColor();
   };
@@ -185,74 +206,66 @@
   };
 
   /*
-  * UTIL : Ajouter une ligne
+  * UTIL : Ajouter une colonne
   */
-  fn_buildLine = function fn_buildLine(div, id, color, cb) {
-    var span_columns;
+  fn_buildCol = function fn_buildCol(divParent, id, color, cb) {
+    var span_col = global.document.createElement('span');
 
-    span_columns = global.document.createElement('span');
-    span_columns.id = id;
-    span_columns.style.backgroundColor = color;
+    span_col.id = id;
+    span_col.style.backgroundColor = color;
     if (cb) {
-      span_columns.onclick = cb;
+      span_col.onclick = cb;
     }
-    div.appendChild(span_columns);
+
+    divParent.appendChild(span_col);
   };
 
   /*
   * CONSTRUCTION DU JEU
-  */ 
-
-  /*
-  * Build : grille des tentatives
   */
-  fn_buildGridTentatives = function fn_buildGridTentatives() {
-    var span_columns, div_rows, i, j, len;
-    
-    for (i = 0, len = a_gridCouleursTentees.length; i < len; i++) {
-      div_rows = global.document.createElement('div');
-      div_rows.id = i;
-
-      for (j = 0; j < NB_COLOR; j++) {
-        fn_buildLine(div_rows, i + '.' + j, a_gridCouleursTentees[i][j]);
-      }
-
-      // Pour afficher le résultat
-      span_columns = global.document.createElement('span');
-      span_columns.id = i + '.nbBlanc';
-      span_columns.className = 'rowResultBlanc';
-      div_rows.appendChild(span_columns);
-      span_columns = global.document.createElement('span');
-      span_columns.id = i + '.nbRouge';
-      span_columns.className = 'rowResultRouge';
-      div_rows.appendChild(span_columns);
-
-      div_couleursTentees.appendChild(div_rows);
-    }
-  };
 
   /*
   * Build du jeu : palette de couleurs + les couleurs à trouver / choisir
   */
   fn_buildGame = function fn_buildGame() {
-    var i, i_randomColor;
+    var i, j, len, i_randomColor, span_col, div_line;
 
     // palette de couleurs
     for (i = 0; i < COULEURS_POSSIBLES.length; i++) {
-      fn_buildLine(div_palette, 'palette_' + i, COULEURS_POSSIBLES[i], fn_selectColor);
+      fn_buildCol(div_palette, 'palette_' + i, COULEURS_POSSIBLES[i], fn_selectColor);
     }
-    
+
     for (i = 0; i < NB_COLOR; i++) {
       // couleurs à trouver
       i_randomColor = fn_pickRandomColor();
       a_couleursATrouver.push(i_randomColor);
-      fn_buildLine(div_couleursATrouver, 'couleursATrouver_' + i, COULEURS_POSSIBLES[i_randomColor]);
-      
+      fn_buildCol(div_couleursATrouver, 'couleursATrouver_' + i, COULEURS_POSSIBLES[i_randomColor]);
+
       // couleurs à choisir
-      fn_buildLine(div_couleursAChoisir, 'couleursAChoisir_' + i, '#fff', fn_openPalette);
+      fn_buildCol(div_couleursAChoisir, 'couleursAChoisir_' + i, '#fff', fn_openPalette);
     }
 
-    fn_buildGridTentatives();
+    // Grille de tentatives
+    for (i = 0, len = a_gridCouleursTentees.length; i < len; i++) {
+      div_line = global.document.createElement('div');
+      div_line.id = i;
+
+      for (j = 0; j < NB_COLOR; j++) {
+        fn_buildCol(div_line, i + '.' + j, a_gridCouleursTentees[i][j]);
+      }
+
+      // Pour afficher le résultat
+      span_col = global.document.createElement('span');
+      span_col.id = i + '.nbBlanc';
+      span_col.className = 'rowResultBlanc';
+      div_line.appendChild(span_col);
+      span_col = global.document.createElement('span');
+      span_col.id = i + '.nbRouge';
+      span_col.className = 'rowResultRouge';
+      div_line.appendChild(span_col);
+
+      div_couleursTentees.appendChild(div_line);
+    }
   };
 
   // Lancement du jeu
@@ -261,4 +274,5 @@
   // bind events globaux
   global.document.getElementById('toggleSolution').onclick = fn_toogleSolution;
   global.document.getElementById('validChoice').onclick = fn_validColor;
+  global.onerror = fn_exceptionHandler;
 }(this));
