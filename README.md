@@ -6,7 +6,7 @@ mastermind-vanilla
 A Mastermind-like game in Vanilla JavaScript. Made with :
 
 - Pure JavaScript,
-- A bit of CSS,
+- A bit of CSS (powered by [cssnext](http://cssnext.github.io/)),
 - gulp
 
 The game is in dist/ and the code is in src/
@@ -20,14 +20,8 @@ Just clone the repo wherever you want.
   - `gulp` for development (build html + launch server with livereload)
   - `gulp build` to generate the game in `dist/`
 
+# Credits
 
-# Ressources
-[Règles du jeu](http://fr.wikipedia.org/wiki/Mastermind) | [Game rules](http://en.wikipedia.org/wiki/Mastermind)
-
-# TODO :
-- chrono
-- améliorer le gameplay
-- ajouter des options de jeu
-- le code avec Angular, Backbone, React et o_O()
-
-The MIT License (MIT)
+- This code is released under The MIT License (MIT)
+- Avatar generator : [8biticon](http://8biticon.com/)
+- Mastermind is a trademark of [Pressman Toy](http://catalog.pressmantoy.com/)

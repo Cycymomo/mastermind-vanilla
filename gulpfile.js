@@ -1,5 +1,6 @@
 var gulp        = require('gulp'),                      // Burp !
     g           = require('gulp-load-plugins')(),       // Charge les plugins Gulp automatiquement et les attach à l'objet "g"
+    pngquant    = require('imagemin-pngquant'),         // Compresse PNG
     conf        = require('./package.json'),            // Récupération de la configuration déclarée dans package.json
     paths       = conf.paths,                           // Récupération des chemins de l'application
     runSequence = require('run-sequence'),              // Solution temporaire jusqu'à gulp 4 (https://github.com/gulpjs/gulp/issues/355)
@@ -19,6 +20,8 @@ gulp.task('clean', function(cb) {
 
 // **********************************
 // JS : hint + min/concat
+gulp.task('js', ['js:hint', 'js:min'], function () {});
+
 gulp.task('js:hint', function () {
   return gulp.src([
               'gulpfile.js',
@@ -46,6 +49,8 @@ gulp.task('js:min', function () {
 
 // **********************************
 // CSS
+gulp.task('css', ['css:min'], function () {});
+
 gulp.task('css:min', function () {
   return streamqueue(
             { objectMode: true },
@@ -68,25 +73,35 @@ gulp.task('css:min', function () {
 
 // **********************************
 // Fonts
-gulp.task('fonts', function () {
-  runSequence('ttf2woff', 'ttf2eot', 'copyttf');
-});
+gulp.task('fonts', ['ttf2woff', 'ttf2eot', 'copyttf'], function () {});
 
 gulp.task('ttf2woff', function(){
-  gulp.src([paths.src + '/fonts/*.ttf'])
-      .pipe(g.ttf2woff())
-      .pipe(gulp.dest(paths.dist + '/fonts'));
+  return gulp.src([paths.src + '/fonts/*.ttf'])
+            .pipe(g.ttf2woff())
+            .pipe(gulp.dest(paths.dist + '/fonts'));
 });
 
 gulp.task('ttf2eot', function(){
-  gulp.src([paths.src + '/fonts/*.ttf'])
-      .pipe(g.ttf2eot())
-      .pipe(gulp.dest(paths.dist + '/fonts'));
+  return gulp.src([paths.src + '/fonts/*.ttf'])
+            .pipe(g.ttf2eot())
+            .pipe(gulp.dest(paths.dist + '/fonts'));
 });
 
 gulp.task('copyttf', function(){
-  gulp.src([paths.src + '/fonts/*.ttf'])
-      .pipe(gulp.dest(paths.dist + '/fonts'));
+  return gulp.src([paths.src + '/fonts/*.ttf'])
+            .pipe(gulp.dest(paths.dist + '/fonts'));
+});
+
+// **********************************
+// Img
+gulp.task('img', ['img:png'], function () {});
+
+gulp.task('img:png', function () {
+  return gulp.src(paths.src + '/img/avatars/*')
+            .pipe(g.imagemin({
+              use: [pngquant({ quality: '65-80', speed: 4 })]
+            }))
+            .pipe(gulp.dest(paths.dist + '/img/avatars'));
 });
 
 // **********************************
@@ -125,7 +140,7 @@ gulp.task('server', function() {
 // Build : nettoyage + minifications/concat sur les JS/CSS + construction de l'index.html + copie des autres fichiers
 gulp.task('build', function () {
   prod = true;
-  runSequence('clean', 'fonts', 'js:hint', 'js:min', 'css:min', 'html');
+  runSequence('clean', 'fonts', 'img', 'js', 'css', 'html');
 });
 
 // Dev : serveur livereload + lint + watch
