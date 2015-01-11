@@ -23,5 +23,6 @@ Just clone the repo wherever you want.
 # Credits
 
 - This code is released under The MIT License (MIT)
+- [Press Start 2P font](http://www.dafont.com/fr/press-start-2p.font) by [Codeman38](http://www.zone38.net/font/)
 - Avatar generator : [8biticon](http://8biticon.com/)
 - Mastermind is a trademark of [Pressman Toy](http://catalog.pressmantoy.com/)
