@@ -28,7 +28,7 @@
   * SHOW ERROR
   */
   fn_showError = function showError(title, msg, details) {
-   global.alert(title + " / " + msg + ' / ' + details);
+    global.alert(title + " / " + msg + ' / ' + details);
   };
   fn_exceptionHandler = function fn_exceptionHandler(error, url, lineNumber){
     var title, msg, details;
@@ -61,14 +61,14 @@
   */
   fn_openPalette = function fn_openPalette(event) {
     var i_case, span_couleursAChoisir_x;
-  
+
     if (!(event.target instanceof global.HTMLSpanElement)) {
       throw "[fn_openPalette] Cette fonction ne peut pas être appelée ici";
     }
-    
+
     i_case = +event.target.id.split('_')[1];
     span_couleursAChoisir_x = global.document.getElementById('couleursAChoisir_' + i_case);
-    
+
     if (!span_couleursAChoisir_x) {
       throw "[fn_openPalette] Impossible de sélectionner cette case";
     }
@@ -91,7 +91,7 @@
   fn_selectColor = function fn_selectColor() {
     var span_couleursAChoisir_x = global.document.getElementById('couleursAChoisir_' + i_couleurAChoisir),
         i_color;
-  
+
     if (!(this instanceof global.HTMLSpanElement)) {
       throw "[fn_selectColor] Cette fonction ne peut pas être appelée ici";
     }
@@ -104,7 +104,7 @@
     if (!COULEURS_POSSIBLES[i_color]) {
       throw "[fn_selectColor] Cette couleur n'existe pas";
     }
-  
+
     if (a_couleursAChoisir.indexOf(i_color) !== -1 && a_couleursAChoisir[i_couleurAChoisir] !== i_color) {
       throw "[fn_selectColor] Impossible de sélectionner deux couleurs identiques";
     }
@@ -112,9 +112,9 @@
     a_couleursAChoisir[i_couleurAChoisir] = i_color;
     span_couleursAChoisir_x.style.backgroundColor = COULEURS_POSSIBLES[i_color];
     fn_closePalette();
-  
+
     if (a_couleursAChoisir.join('').length === NB_COLOR) {
-       global.document.getElementById('validChoice').style.visibility = 'visible';
+      global.document.getElementById('validChoice').style.visibility = 'visible';
     }
   };
 
@@ -174,11 +174,11 @@
         span_nbBlanc = global.document.getElementById(temp_tentatives + '.nbBlanc'),
         span_nbRouge = global.document.getElementById(temp_tentatives + '.nbRouge'),
         i_nbBlanc = 0, i_nbRouge = 0;
-    
+
     if (!span_nbBlanc || !span_nbRouge) {
       throw "Impossible d'afficher le résultat";
     }
-    
+
     if (temp_choix === temp_solution) {
       fn_displayFin(true, temp_tentatives+1);
     } else if (temp_tentatives+1 === NB_TENTATIVES) {
@@ -270,7 +270,7 @@
 
   // Lancement du jeu
   fn_buildGame();
-  
+
   // bind events globaux
   global.document.getElementById('toggleSolution').onclick = fn_toogleSolution;
   global.document.getElementById('validChoice').onclick = fn_validColor;
