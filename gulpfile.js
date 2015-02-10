@@ -49,26 +49,26 @@ gulp.task('js:min', function () {
 
 // **********************************
 // CSS
-gulp.task('css', ['css:next', 'css:copy'], function () {});
-
-var cssNextOptions = {
-  compress: prod,
-  features: {
-    autoprefixer: {
-      browsers: ['last 2 versions'],
-      cascade: false
-    }
-  }
-};
+gulp.task('css', function () {
+  runSequence('css:next', 'css:copy');
+});
 
 gulp.task('css:next', function () {
   return gulp.src(paths.src + '/css/*.css')
-              .pipe(g.cssnext(cssNextOptions))
+              .pipe(g.cssnext({
+                compress: prod,
+                features: {
+                  autoprefixer: {
+                    browsers: ['last 2 versions'],
+                    cascade: false
+                  }
+                }
+              }))
               .pipe(gulp.dest(paths.src + '/css/build'));
 });
 
 gulp.task('css:copy', function () {
-  return gulp.src([paths.src + '/css/vendor/**/*', paths.src + '/css/build/**/*'])
+  return gulp.src([paths.src + '/css/vendor/**/*', paths.src + '/css/build/**/*.css'])
               .pipe(g.concat('app.' + conf.version + '.min.css'))
               .pipe(g.header(banner))
               .pipe(gulp.dest((prod ? paths.dist : paths.src) + '/css'));
