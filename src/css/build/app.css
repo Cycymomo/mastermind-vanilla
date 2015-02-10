@@ -3,14 +3,6 @@
 * Cyril Moreau - @cycymomo - MIT Licence
 */
 
-:root {
-  --main-color: #222;
-  --main-link-color: #4183c4;
-  --main-background-color: #f4f7f8;
-  --selection-color: #b3d4fc;
-  --main-font-size: 1rem;
-}
-
 @font-face {
   font-family: 'PressStart2P';
   src: url('fonts/PressStart2P.eot'); /* IE9 Compat Modes */
@@ -22,37 +14,37 @@
 }
 
 html {
-  color: var(--main-color);
-  font-size: var(--main-font-size);
-  line-height: calc(var(--main-font-size) * 1.5);
+  color: #222;
+  font-size: 1rem;
+  line-height: 1.5rem;
 }
 
 ::-moz-selection {
-  background: var(--selection-color);
+  background: #b3d4fc;
   text-shadow: none;
 }
 
 ::selection {
-  background: var(--selection-color);
+  background: #b3d4fc;
   text-shadow: none;
 }
 
 a {
-  color: var(--main-link-color);
+  color: #4183c4;
 }
 a:hover {
-  color: var(--main-link-color);
+  color: #4183c4;
   transition: color 1s;
   text-decoration: underline;
 }
 a:visited {
-  color: color(var(--main-link-color) blackness(+20%));
+  color: rgb(64, 105, 145);
 }
 
 body {
   font-family: "PressStart2P", Helvetica, Arial, sans-serif;
   text-align: center;
-  background-color: var(--main-background-color);
+  background-color: #f4f7f8;
   /*display: flex;
   min-height: 100vh;*/
 }

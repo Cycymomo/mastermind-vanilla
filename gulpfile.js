@@ -49,26 +49,29 @@ gulp.task('js:min', function () {
 
 // **********************************
 // CSS
-gulp.task('css', ['css:min'], function () {});
+gulp.task('css', ['css:next', 'css:copy'], function () {});
 
-gulp.task('css:min', function () {
-  return streamqueue(
-            { objectMode: true },
-            gulp.src(paths.src + '/css/vendor/**'),
-            gulp.src(paths.src + '/css/*.css')
-                .pipe(g.cssnext({
-                    compress: true,
-                    features: {
-                      autoprefixer: {
-                        browsers: ['last 2 versions'],
-                        cascade: false
-                      }
-                    }
-                }))
-        )
-        .pipe(g.concat('app.' + conf.version + '.min.css'))
-        .pipe(g.header(banner))
-        .pipe(gulp.dest(paths.dist + '/css'));
+var cssNextOptions = {
+  compress: prod,
+  features: {
+    autoprefixer: {
+      browsers: ['last 2 versions'],
+      cascade: false
+    }
+  }
+};
+
+gulp.task('css:next', function () {
+  return gulp.src(paths.src + '/css/*.css')
+              .pipe(g.cssnext(cssNextOptions))
+              .pipe(gulp.dest(paths.src + '/css/build'));
+});
+
+gulp.task('css:copy', function () {
+  return gulp.src([paths.src + '/css/vendor/**/*', paths.src + '/css/build/**/*'])
+              .pipe(g.concat('app.' + conf.version + '.min.css'))
+              .pipe(g.header(banner))
+              .pipe(gulp.dest((prod ? paths.dist : paths.src) + '/css'));
 });
 
 // **********************************
@@ -76,20 +79,20 @@ gulp.task('css:min', function () {
 gulp.task('fonts', ['ttf2woff', 'ttf2eot', 'copyttf'], function () {});
 
 gulp.task('ttf2woff', function(){
-  return gulp.src([paths.src + '/fonts/*.ttf'])
+  return gulp.src([paths.src + '/css/build/fonts/*.ttf'])
             .pipe(g.ttf2woff())
-            .pipe(gulp.dest(paths.dist + '/fonts'));
+            .pipe(gulp.dest(paths.dist + '/css/fonts'));
 });
 
 gulp.task('ttf2eot', function(){
-  return gulp.src([paths.src + '/fonts/*.ttf'])
+  return gulp.src([paths.src + '/css/build/fonts/*.ttf'])
             .pipe(g.ttf2eot())
-            .pipe(gulp.dest(paths.dist + '/fonts'));
+            .pipe(gulp.dest(paths.dist + '/css/fonts'));
 });
 
 gulp.task('copyttf', function(){
-  return gulp.src([paths.src + '/fonts/*.ttf'])
-            .pipe(gulp.dest(paths.dist + '/fonts'));
+  return gulp.src([paths.src + '/css/build/fonts/*.ttf'])
+            .pipe(gulp.dest(paths.dist + '/css/fonts'));
 });
 
 // **********************************
@@ -110,7 +113,7 @@ gulp.task('html', function () {
   return gulp.src(paths.src + '/index.html')
             .pipe(g.inject(
               gulp.src(
-                prod ? [paths.dist + '/**/*.js', paths.dist + '/**/*.css'] : [paths.src + '/**/*.js', paths.src + '/**/*.css'],
+                prod ? [paths.dist + '/**/*.js', paths.dist + '/**/*.css'] : [paths.src + '/**/*.js', paths.src + '/css/build/*.css', paths.src + '/css/vendor/*.css'],
                 {read: false}
               ),
               {relative: true}
@@ -122,9 +125,15 @@ gulp.task('html', function () {
 // **********************************
 // DEV
 gulp.task('server', function() {
-  var watcher = gulp.watch(paths.src + 'js/**', ['html', 'js:hint']);
-  watcher.on('change', function(event) {
-    console.log('Fichier ' + event.path + ' changé !');
+  var watcherJS = gulp.watch(paths.src + '/js/**/*', ['js:hint', 'html']),
+      watcherCSS = gulp.watch([paths.src + '/css/vendor/**/*', paths.src + '/css/*.css'], ['css:next', 'html']);
+
+  watcherJS.on('change', function(event) {
+    console.log('Fichier JS ' + event.path + ' changé !');
+  });
+
+  watcherCSS.on('change', function(event) {
+    console.log('Fichier CSS ' + event.path + ' changé !');
   });
 
   gulp.src(paths.src)
@@ -140,12 +149,12 @@ gulp.task('server', function() {
 // Build : nettoyage + minifications/concat sur les JS/CSS + construction de l'index.html + copie des autres fichiers
 gulp.task('build', function () {
   prod = true;
-  runSequence('clean', 'fonts', 'img', 'js', 'css', 'html');
+  runSequence('clean', 'js', 'css', 'fonts', 'img', 'html');
 });
 
 // Dev : serveur livereload + lint + watch
 gulp.task('dev', function () {
-  runSequence('html', 'js:hint', 'server');
+  runSequence('js:hint', 'css:next', 'html', 'server');
 });
 
 // Par défaut : lancement de l'env de dév
