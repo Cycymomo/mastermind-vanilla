@@ -1,7 +1,7 @@
 mastermind-vanilla
 ==================
 
-[Test it !](http://nickdouille.github.io/mastermind-vanilla/dist)
+[Test it !](http://cycymomo.github.io/mastermind-vanilla/dist)
 
 A Mastermind-like game in Vanilla JavaScript. Made with :
 
